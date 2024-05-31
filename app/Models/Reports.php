@@ -5,11 +5,33 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class Reports extends Model
 {
     use HasFactory;
+
+    public static function validation($requiredParams, $request, $IdJob)
+    {
+        foreach ($requiredParams as $param) {
+            if (empty($request[$param])) {
+                try {
+                    // Asumsi bahwa ada method untuk mendapatkan reportJob instance yang ingin diperbarui.
+                    $reportJob = ReportJob::findOrFail($IdJob); // Pastikan request memiliki ID yang valid
+                    $reportJob->update([
+                        'status' => 'failed',
+                        'error_message' => "Parameter '{$param}' tidak boleh kosong."
+                    ]);
+                } catch (\Exception $e) {
+                    echo "Error: " . $e->getMessage();
+                    die();
+                }
+                echo "Error: Parameter '{$param}' tidak boleh kosong.";
+                die();
+            }
+        }
+    }
 
     public static function getMasterOrganisasi()
     {
@@ -19,12 +41,8 @@ class Reports extends Model
     public static function header($request)
     {
         $requiredParams = ['kodeklasifikasi', 'kodeopd', 'tahun'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $tahun = $request['tahun'];
         $kodeopd = $request['kodeopd'];
         $kodeklasifikasi = $request['kodeklasifikasi'];
@@ -64,11 +82,8 @@ class Reports extends Model
     public static function BUKU_INVENTARIS($request)
     {
         $requiredParams = ['kodeklasifikasi', 'kodeopd', 'tahun'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                return "Error: Parameter '{$param}' tidak boleh kosong.";
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $tahun = $request['tahun'];
         $kodeopd = $request['kodeopd'];
         $kodeklasifikasi = $request['kodeklasifikasi'];
@@ -98,8 +113,7 @@ class Reports extends Model
             $result = DB::select($query);
             return $result;
         } catch (\Exception $e) {
-            echo "Cek Penulisan Parameter! atau </br>" . $e->getMessage();
-            die();
+            throw new \Exception("Cek Penulisan Parameter! atau </br>" . $e->getMessage());
         }
     }
     public static function BUKU_INVENTARIS_HEADER($request)
@@ -109,12 +123,8 @@ class Reports extends Model
     public static function DAFTAR_PENYUSUTAN($request)
     {
         $requiredParams = ['kodeklasifikasi', 'kodeopd', 'tahun'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
 
         $tahun = $request['tahun'];
         $kodeopd = $request['kodeopd'];
@@ -171,12 +181,8 @@ class Reports extends Model
     public static function LAPORAN_INVENTARIS_RUANG($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'koderuang', 'kodeopd'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $koderuang = $request['koderuang'];
@@ -242,12 +248,8 @@ class Reports extends Model
     public static function LAPORAN_KIBA($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -310,12 +312,8 @@ class Reports extends Model
     public static function LAPORAN_KIBB($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $kodeklasifikasiArray = array_filter(explode('.', $kodeklasifikasi));
         $tahun = $request['tahun'];
@@ -378,12 +376,8 @@ class Reports extends Model
     public static function LAPORAN_KIBC($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -447,12 +441,8 @@ class Reports extends Model
     public static function LAPORAN_KIBD($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -516,12 +506,8 @@ class Reports extends Model
     public static function LAPORAN_KIBE($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -607,12 +593,8 @@ class Reports extends Model
     public static function LAPORAN_KIBF($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -677,12 +659,8 @@ class Reports extends Model
     public static function LAPORAN_PENGADAAN_BARANG($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodeopd'];
-        foreach ($requiredParams as $param) {
-            if (empty($request[$param])) {
-                echo "Error: Parameter '{$param}' tidak boleh kosong.";
-                die();
-            }
-        }
+        $IdJob = $request['IdJob'];
+        self::validation($requiredParams, $request, $IdJob);
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodeopd = $request['kodeopd'];

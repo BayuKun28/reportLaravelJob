@@ -27,6 +27,7 @@ class GenerateReport implements ShouldQueue
     public function handle()
     {
         try {
+
             $this->reportJob->update(['status' => 'processing']);
             Log::info("Started processing job ID: {$this->reportJob->id}");
 
@@ -35,6 +36,7 @@ class GenerateReport implements ShouldQueue
 
             $filename = $this->reportJob->filename;
             $requestData = $this->reportJob->request_data;
+            $requestData['IdJob'] = $this->reportJob->id;
 
             $header = $filename . '_HEADER';
             $data['type'] = 'pdf';
@@ -49,12 +51,24 @@ class GenerateReport implements ShouldQueue
             }
 
             if (method_exists(Reports::class, $filename)) {
-                $reportData = Reports::$filename($requestData);
-                Log::info("Filename method exists: {$filename}");
+                try {
+                    $reportData = Reports::$filename($requestData);
+                    Log::info("Filename method exists: {$filename}");
+                } catch (\Exception $e) {
+                    $this->reportJob->update([
+                        'status' => 'failed',
+                        'error_message' => $e->getMessage(),
+                    ]);
+                    throw $e;
+                }
             } else {
-                $this->reportJob->update(['status' => 'failed']);
-                Log::error("Laporan Dengan Nama {$filename} Tidak Tersedia");
-                throw new \Exception("Laporan Dengan Nama {$filename} Tidak Tersedia");
+                $errorMessage = "Laporan Dengan Nama {$filename} Tidak Tersedia";
+                $this->reportJob->update([
+                    'status' => 'failed',
+                    'error_message' => $errorMessage,
+                ]);
+                Log::error($errorMessage);
+                throw new \Exception($errorMessage);
             }
 
             $chunks = array_chunk($reportData, 100);

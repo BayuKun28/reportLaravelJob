@@ -36,7 +36,7 @@ Route::get('/reports', function (Request $request) {
 });
 Route::get('/reports/start/{jobId}', [ReportsController::class, 'startJob']);
 Route::get('/reports/status/{jobId}', [ReportsController::class, 'checkStatus']);
-Route::get('/reports/download/{jobId}', [ReportsController::class, 'download'])->name('reports.download');
+Route::get('/reports/stream/{jobId}', [ReportsController::class, 'stream'])->name('reports.stream');
 
 // Route::get('/debug-view', function (Request $request) {
 //     $filename = $request->get('file', 'default_view'); // Replace 'default_view' with your default view name

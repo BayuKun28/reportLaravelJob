@@ -9,30 +9,43 @@
     <title>Generating Report</title>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            let elapsedTime = 0; // Set elapsed time in seconds
+            let elapsedTime = 0;
             const timer = document.getElementById('timer');
-            const interval = setInterval(function() {
+            let timerInterval = setInterval(function() {
                 elapsedTime++;
-                timer.textContent = elapsedTime;
+                timer.textContent = elapsedTime + ' Second';
             }, 1000);
 
-            const jobId = "{{ $jobId }}";
+            const hashedJobId = "{{ md5($jobId) }}";
             const startJob = async () => {
-                await fetch(`/reports/start/${jobId}`);
+                await fetch(`/reports/start/${hashedJobId}`);
             };
             startJob();
 
             const checkStatus = setInterval(function() {
-                fetch(`/reports/status/${jobId}`)
+                fetch(`/reports/status/${hashedJobId}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'completed') {
                             clearInterval(checkStatus);
-                            window.location.href = data.downloadUrl;
+                            clearInterval(timerInterval);
+                            window.location.href = data.streamUrl;
                         } else if (data.status === 'failed') {
                             clearInterval(checkStatus);
-                            alert("Failed to generate report. Please try again.");
+                            clearInterval(timerInterval);
+                            timer.textContent = "Gagal";
+                            document.getElementById('error-message').textContent = data.errorMessage ||
+                                "Failed to generate report. Please try again.";
+                            document.getElementById('error-container').style.display = 'block';
                         }
+                    })
+                    .catch(error => {
+                        clearInterval(checkStatus);
+                        clearInterval(timerInterval);
+                        timer.textContent = "Gagal";
+                        document.getElementById('error-message').textContent =
+                            "An error occurred. Please try again later.";
+                        document.getElementById('error-container').style.display = 'block';
                     });
             }, 3000);
         });
@@ -41,7 +54,10 @@
 
 <body>
     <h1>Generating your report, please wait...</h1>
-    <p>Time elapsed: <span id="timer">0</span> seconds.</p>
+    <p>Time elapsed: <span id="timer">0</span></p>
+    <div id="error-container" style="display:none;">
+        <p id="error-message" style="color:red;"></p>
+    </div>
 </body>
 
 </html>

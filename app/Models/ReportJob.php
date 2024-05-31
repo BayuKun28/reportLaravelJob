@@ -9,7 +9,7 @@ class ReportJob extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['filename', 'request_data', 'status', 'output_path'];
+    protected $fillable = ['filename', 'request_data', 'status', 'output_path', 'error_message'];
 
     protected $casts = [
         'request_data' => 'array',

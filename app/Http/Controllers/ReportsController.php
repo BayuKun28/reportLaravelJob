@@ -28,7 +28,9 @@ class ReportsController extends Controller
     public function startJob($jobId)
     {
         // Find the job record
-        $reportJob = ReportJob::find($jobId);
+        $reportJob = ReportJob::all()->first(function ($job) use ($jobId) {
+            return md5($job->id) === $jobId;
+        });
 
         if (!$reportJob) {
             return response()->json(['status' => 'error', 'message' => 'Job not found'], 404);
@@ -48,18 +50,35 @@ class ReportsController extends Controller
 
     public function checkStatus($jobId)
     {
-        $reportJob = ReportJob::findOrFail($jobId);
+        $reportJob = ReportJob::all()->first(function ($job) use ($jobId) {
+            return md5($job->id) === $jobId;
+        });
 
-        if ($reportJob->status === 'completed') {
-            return response()->json(['status' => 'completed', 'downloadUrl' => route('reports.download', ['jobId' => $jobId])]);
-        } else {
-            return response()->json(['status' => 'processing']);
+        if ($reportJob) {
+            return response()->json([
+                'status' => $reportJob->status,
+                'errorMessage' => $reportJob->status === 'failed' ? $reportJob->error_message : null,
+                'streamUrl' => $reportJob->status === 'completed' ? route('reports.stream', ['jobId' => $jobId]) : null,
+            ]);
         }
+
+        return response()->json(['status' => 'not_found'], 404);
     }
 
-    public function download($jobId)
+    public function stream($jobId)
     {
-        $reportJob = ReportJob::findOrFail($jobId);
+        $reportJob = ReportJob::all()->first(function ($job) use ($jobId) {
+            return md5($job->id) === $jobId;
+        });
+
+        if (!$reportJob) {
+            abort(404);
+        }
+
+        if ($reportJob->status === 'failed') {
+            echo $reportJob->error_message;
+            die();
+        }
 
         if ($reportJob->status !== 'completed' || !$reportJob->output_path) {
             abort(404);
@@ -67,7 +86,7 @@ class ReportsController extends Controller
 
         return response()->file(storage_path("app/{$reportJob->output_path}"), [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $reportJob->output_path . '"',
+            'Content-Disposition' => 'inline; filename="' . basename($reportJob->output_path) . '"',
         ]);
     }
 
