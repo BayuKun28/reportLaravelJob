@@ -27,21 +27,21 @@ class GenerateReport implements ShouldQueue
     public function handle()
     {
         try {
-
+            // start processing
             $this->reportJob->update(['status' => 'processing']);
             Log::info("Started processing job ID: {$this->reportJob->id}");
-
+            // init limit memory and time
             ini_set('memory_limit', '512M');
             set_time_limit(0);
-
+            // set name report and params
             $filename = $this->reportJob->filename;
             $requestData = $this->reportJob->request_data;
             $requestData['IdJob'] = $this->reportJob->id;
-
+            // init header
             $header = $filename . '_HEADER';
             $data['type'] = 'pdf';
             // $data['tahun'] = $requestData['tahun'];
-
+            // check header if exist
             if (method_exists(Reports::class, $header)) {
                 $data['judul'] = Reports::$header($requestData);
                 Log::info("Header method exists: {$header}");
@@ -49,7 +49,7 @@ class GenerateReport implements ShouldQueue
                 $data['judul'] = null;
                 Log::info("Header method does not exist: {$header}");
             }
-
+            // check report if exist
             if (method_exists(Reports::class, $filename)) {
                 try {
                     $reportData = Reports::$filename($requestData);
@@ -70,7 +70,7 @@ class GenerateReport implements ShouldQueue
                 Log::error($errorMessage);
                 throw new \Exception($errorMessage);
             }
-
+            // start chunk with limit array
             $chunks = array_chunk($reportData, 100);
             Log::info("Data chunked into " . count($chunks) . " chunks.");
 
@@ -78,7 +78,7 @@ class GenerateReport implements ShouldQueue
             $options = [
                 'isRemoteEnabled' => true,
             ];
-
+            // counter for row index
             $counter = 1;
 
             foreach ($chunks as $index => $chunk) {
@@ -106,10 +106,10 @@ class GenerateReport implements ShouldQueue
                     throw $e;
                 }
             }
-
+            // path merged file
             $mergedPdfPath = storage_path('app/' . $filename . '_merged_report_' . $this->reportJob->id . '.pdf');
             $mergedPdf = new Fpdi();
-
+            // merged chunks
             foreach ($pdfFiles as $file) {
                 $pageCount = $mergedPdf->setSourceFile($file);
                 for ($i = 1; $i <= $pageCount; $i++) {
@@ -118,10 +118,9 @@ class GenerateReport implements ShouldQueue
                     $mergedPdf->useTemplate($tplIdx);
                 }
             }
-
             $mergedPdf->Output($mergedPdfPath, 'F');
             Log::info("Merged PDF saved to {$mergedPdfPath}");
-
+            // remove temporary chunks
             foreach ($pdfFiles as $file) {
                 unlink($file);
                 Log::info("Deleted temporary file {$file}");
@@ -134,7 +133,6 @@ class GenerateReport implements ShouldQueue
             Storage::put("reports/{$this->reportJob->id}_{$filename}_" . $timestamp . ".pdf", file_get_contents($mergedPdfPath));
             Log::info("Final report saved to reports/{$this->reportJob->id}_{$filename}_" . $timestamp . ".pdf");
             unlink($mergedPdfPath);
-
             // Update the job status and output path
             $this->reportJob->update([
                 'status' => 'completed',
@@ -143,7 +141,6 @@ class GenerateReport implements ShouldQueue
             Log::info("Job ID: {$this->reportJob->id} completed successfully.");
         } catch (\Exception $e) {
             Log::error('Report generation failed: ' . $e->getMessage());
-
             // Update the job status to 'failed' and log the error message
             $this->reportJob->update([
                 'status' => 'failed',

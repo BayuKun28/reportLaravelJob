@@ -41,8 +41,10 @@ class Reports extends Model
     public static function header($request)
     {
         $requiredParams = ['kodeklasifikasi', 'kodeopd', 'tahun'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $tahun = $request['tahun'];
         $kodeopd = $request['kodeopd'];
         $kodeklasifikasi = $request['kodeklasifikasi'];
@@ -82,8 +84,10 @@ class Reports extends Model
     public static function BUKU_INVENTARIS($request)
     {
         $requiredParams = ['kodeklasifikasi', 'kodeopd', 'tahun'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $tahun = $request['tahun'];
         $kodeopd = $request['kodeopd'];
         $kodeklasifikasi = $request['kodeklasifikasi'];
@@ -123,14 +127,15 @@ class Reports extends Model
     public static function DAFTAR_PENYUSUTAN($request)
     {
         $requiredParams = ['kodeklasifikasi', 'kodeopd', 'tahun'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
 
         $tahun = $request['tahun'];
         $kodeopd = $request['kodeopd'];
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $kodeopdArray = array_filter(explode('.', $kodeopd));
-
 
         $xkodeurusan = 'null';
         $xkodesuburusan = 'null';
@@ -181,8 +186,10 @@ class Reports extends Model
     public static function LAPORAN_INVENTARIS_RUANG($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'koderuang', 'kodeopd'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $koderuang = $request['koderuang'];
@@ -248,8 +255,10 @@ class Reports extends Model
     public static function LAPORAN_KIBA($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -265,7 +274,6 @@ class Reports extends Model
             $sFilterKlasifikasi = ' and kodeklasifikasi = ' . $kodeklasifikasi . '  and ';
         }
 
-
         if ($kodeopd = '0') {
             $sFilter = '';
         } else if ((!empty($kodeopdArray[2])) and (empty($kodeopdArray[3]))) {
@@ -275,7 +283,6 @@ class Reports extends Model
         } else {
             $sFilter = ' and kodeurusan = ' . $kodeopdArray[0] . ' and kodesuburusan = ' . $kodeopdArray[1] . ' and kodeorganisasi = ' . $kodeopdArray[2] . ' and  kodeunit = ' . $kodeopdArray[3] . ' and kodesubunit = ' . $kodeopdArray[4] . '';
         }
-
 
         $query = " SELECT qrcode,
                         kodeurusan||'.'||kodesuburusan||'.'||kodesuburusan||'.'||kodeorganisasi||'.'||kodeunit||'.'||kodesubunit||'.' as kodeopd, uraiorganisasi, 
@@ -312,8 +319,10 @@ class Reports extends Model
     public static function LAPORAN_KIBB($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $kodeklasifikasiArray = array_filter(explode('.', $kodeklasifikasi));
         $tahun = $request['tahun'];
@@ -328,7 +337,6 @@ class Reports extends Model
         } else {
             $sFilterKlasifikasi = ' and kodeklasifikasi = ' . $kodeklasifikasi . '  and ';
         }
-
 
         if ((!empty($kodeopdArray[1])) and (empty($kodeopdArray[2]))) {
             $sFilter = '';
@@ -376,8 +384,10 @@ class Reports extends Model
     public static function LAPORAN_KIBC($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -393,7 +403,6 @@ class Reports extends Model
             $sFilterKlasifikasi = ' and kodeklasifikasi = ' . $kodeklasifikasi . '  and ';
         }
 
-
         if ($kodeopd = '0') {
             $sFilter = '';
         } else if ((!empty($kodeopdArray[2])) and (empty($kodeopdArray[3]))) {
@@ -403,7 +412,6 @@ class Reports extends Model
         } else {
             $sFilter = ' and kodeurusan = ' . $kodeopdArray[0] . ' and kodesuburusan = ' . $kodeopdArray[1] . ' and kodeorganisasi = ' . $kodeopdArray[2] . ' and  kodeunit = ' . $kodeopdArray[3] . ' and kodesubunit = ' . $kodeopdArray[4] . '';
         }
-
 
         $query = " SELECT  qrcode,kodeurusan||'.'||kodesuburusan||'.'||kodesuburusan||'.'||kodeorganisasi||'.'||kodeunit||'.'||kodesubunit||'.' as kodeopd, uraiorganisasi, 
                         format_kodebarang_108(k.kodegolongan, k.kodebidang, k.kodekelompok, k.kodesub, k.kodesubsub) as kodebarang,                       
@@ -441,8 +449,10 @@ class Reports extends Model
     public static function LAPORAN_KIBD($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -458,7 +468,6 @@ class Reports extends Model
             $sFilterKlasifikasi = ' and kodeklasifikasi = ' . $kodeklasifikasi . '  and ';
         }
 
-
         if ($kodeopd = '0') {
             $sFilter = '';
         } else if ((!empty($kodeopdArray[2])) and (empty($kodeopdArray[3]))) {
@@ -468,7 +477,6 @@ class Reports extends Model
         } else {
             $sFilter = ' and kodeurusan = ' . $kodeopdArray[0] . ' and kodesuburusan = ' . $kodeopdArray[1] . ' and kodeorganisasi = ' . $kodeopdArray[2] . ' and  kodeunit = ' . $kodeopdArray[3] . ' and kodesubunit = ' . $kodeopdArray[4] . '';
         }
-
 
         $query = " SELECT qrcode,kodeurusan||'.'||kodesuburusan||'.'||kodesuburusan||'.'||kodeorganisasi||'.'||kodeunit||'.'||kodesubunit||'.' as kodeopd, uraiorganisasi, 
                         format_kodebarang_108(k.kodegolongan, k.kodebidang, k.kodekelompok, k.kodesub, k.kodesubsub) as kodebarang,                                                                                                                                                                                                                                                                                  
@@ -506,8 +514,10 @@ class Reports extends Model
     public static function LAPORAN_KIBE($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -523,7 +533,6 @@ class Reports extends Model
             $sFilterKlasifikasi = ' and kodeklasifikasi = ' . $kodeklasifikasi . '  and ';
         }
 
-
         if ($kodeopd = '0') {
             $sFilter = '';
         } else if ((!empty($kodeopdArray[2])) and (empty($kodeopdArray[3]))) {
@@ -533,7 +542,6 @@ class Reports extends Model
         } else {
             $sFilter = ' and kodeurusan = ' . $kodeopdArray[0] . ' and kodesuburusan = ' . $kodeopdArray[1] . ' and kodeorganisasi = ' . $kodeopdArray[2] . ' and  kodeunit = ' . $kodeopdArray[3] . ' and kodesubunit = ' . $kodeopdArray[4] . '';
         }
-
 
         $query = " SELECT
                         qrcode,
@@ -593,8 +601,10 @@ class Reports extends Model
     public static function LAPORAN_KIBF($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodegolongan', 'kodeopd'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodegolongan = $request['kodegolongan'];
@@ -610,7 +620,6 @@ class Reports extends Model
             $sFilterKlasifikasi = ' and kodeklasifikasi = ' . $kodeklasifikasi . '  and ';
         }
 
-
         if ($kodeopd = '0') {
             $sFilter = '';
         } else if ((!empty($kodeopdArray[2])) and (empty($kodeopdArray[3]))) {
@@ -620,7 +629,6 @@ class Reports extends Model
         } else {
             $sFilter = ' and kodeurusan = ' . $kodeopdArray[0] . ' and kodesuburusan = ' . $kodeopdArray[1] . ' and kodeorganisasi = ' . $kodeopdArray[2] . ' and  kodeunit = ' . $kodeopdArray[3] . ' and kodesubunit = ' . $kodeopdArray[4] . '';
         }
-
 
         $query = " SELECT qrcode,kodeurusan||'.'||kodesuburusan||'.'||kodesuburusan||'.'||kodeorganisasi||'.'||kodeunit||'.'||kodesubunit||'.' as kodeopd, uraiorganisasi, 
                         format_kodebarang_108(k.kodegolongan, k.kodebidang, k.kodekelompok, k.kodesub, k.kodesubsub) as kodebarang,                                              
@@ -659,8 +667,10 @@ class Reports extends Model
     public static function LAPORAN_PENGADAAN_BARANG($request)
     {
         $requiredParams = ['kodeklasifikasi', 'tahun', 'kodeopd'];
+        // validate params
         $IdJob = $request['IdJob'];
         self::validation($requiredParams, $request, $IdJob);
+        // get params
         $kodeklasifikasi = $request['kodeklasifikasi'];
         $tahun = $request['tahun'];
         $kodeopd = $request['kodeopd'];
@@ -674,7 +684,6 @@ class Reports extends Model
         } else {
             $sFilterKlasifikasi = ' and k.kodeklasifikasi = ' . $kodeklasifikasi . ' ';
         }
-
 
         if ((!empty($kodeopdArray[1])) and (empty($kodeopdArray[2]))) {
             $sFilter = '';
